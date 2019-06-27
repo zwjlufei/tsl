@@ -29,20 +29,23 @@ export default class Header extends Component{
         })
     }
     goBack(){
-        this.props.navigate.goBack();
+        if(this.props.jump){
+            this.props.navigate.navigate('App',{selectedTab:this.props.jump});
+        }else {
+            this.props.navigate.goBack();
+
+        }
     }
     rightBtn(){
         return(
-            <View style={styles.flex}></View>
+            <View style={[styles.flex,styles.pr_17]}></View>
         )
     }
     leftBtn(){
         const navigate =  this.props.navigate;
         if(this.props.left){
             return(
-                <View style={styles.flex}>
-
-                </View>
+                <View style={[styles.flex,styles.pl_17]}></View>
             )
         }else{
             return(
@@ -98,5 +101,8 @@ const styles = StyleSheet.create({
     },
     header_wrap:{
         backgroundColor: '#f8f8f8'
+    },
+    pr_17:{
+        paddingRight:px2dp(17)
     }
 });

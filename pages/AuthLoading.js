@@ -16,7 +16,8 @@ export default class OaDetail extends Component{
     }
     _bootstrapAsync = async () => {
         const isLogin = await AsyncStorage.getItem('isLogin');
-        this.props.navigation.navigate(isLogin ? 'App' : 'Login');
+        this.props.navigation.navigate(isLogin ? 'App' : 'Login',{selectedTab:'MsgList'});
+        // this.props.navigation.navigate(true ? 'App' : 'Login');
     };
     render(){
         const { navigate } = this.props.navigation;

@@ -9,13 +9,13 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View,Image,BackHandler} from 'react-native';
 import TabNavigator from 'react-native-tab-navigator';
-import Map from './pages/Map';
 import MsgList from './pages/MsgList';
-import OaList from './pages/OaList';
+import ModuleCollect from './pages/ModuleCollect';
 import PassPage from './pages/PassPage';
 import NewsList from './pages/NewsList';
 import { SafeAreaView } from 'react-navigation';
-import {Toast} from "./pages/tools/public";
+import {Toast,feach_request} from "./pages/tools/public";
+import AsyncStorage from '@react-native-community/async-storage';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -23,19 +23,12 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-const dataSource = [
+const tabData = [
     {icon:require('./images/msg_on.png'),selectedIcon:require('./images/msg_select.png'),tabPage:'MsgList',tabName:'消息',component:MsgList},
     {icon:require('./images/bugle_on.png'),selectedIcon:require('./images/bugle_select.png'),tabPage:'NewsList',tabName:'公告',component:NewsList},
     {icon:require('./images/pass_on.png'),selectedIcon:require('./images/pass_select.png'),tabPage:'PassPage',tabName:'通行',component:PassPage},
-    {icon:require('./images/oa_on.png'),selectedIcon:require('./images/oa_select.png'),tabPage:'OaList',tabName:'事务',component:OaList}
+    {icon:require('./images/oa_on.png'),selectedIcon:require('./images/oa_select.png'),tabPage:'ModuleCollect',tabName:'功能',component:ModuleCollect}
 ];
-const newDataSource = [
-    {icon:require('./images/msg_on.png'),selectedIcon:require('./images/msg_select.png'),tabPage:'MsgList',tabName:'消息',component:MsgList},
-    {icon:require('./images/bugle_on.png'),selectedIcon:require('./images/bugle_select.png'),tabPage:'NewsList',tabName:'公告',component:NewsList},
-    {icon:require('./images/pass_on.png'),selectedIcon:require('./images/pass_select.png'),tabPage:'PassPage',tabName:'通行',component:PassPage},
-    {icon:require('./images/oa_on.png'),selectedIcon:require('./images/oa_select.png'),tabPage:'OaList',tabName:'事务',component:OaList},
-    {icon:require('./images/home_on.png'),selectedIcon:require('./images/home_select.png'),tabPage:'Map',tabName:'物业',component:Map}
-]
 var navigation = null;
 type Props = {};
 export default class App extends Component<Props> {
@@ -46,12 +39,32 @@ export default class App extends Component<Props> {
         super(props);
         navigation = this.props.navigation;
         this.state = {
-            selectedTab:'MsgList',
-            isVisitor:false
+            selectedTab:this.props.navigation.state.params.selectedTab
+        }
+    }
+    componentDidMount() {
+        feach_request('/user/info','GET')
+            .then((data)=>{
+                if(data.code==0){
+                    AsyncStorage.setItem('userInfo',JSON.stringify(data.data));
+                }
+            })
+            .catch((err)=>{
+                Toast('网络错误～')
+            })
+        if(Platform.OS === "android"){
+            BackHandler.addEventListener('hardwareBackPress',
+                this.onBackButtonPressAndroid);
+        }
+    }
+
+    componentWillUnmount() {
+        if(Platform.OS === "android"){
+            BackHandler.removeEventListener('hardwareBackPress',
+                this.onBackButtonPressAndroid);
         }
     }
   render() {
-        var tabData = this.state.isVisitor? dataSource:newDataSource;
       let tabViews = tabData.map((item,i) => {
           return (
               <TabNavigator.Item
@@ -79,19 +92,7 @@ export default class App extends Component<Props> {
           </SafeAreaView>
       );
   }
-    componentDidMount() {
-        if(Platform.OS === "android"){
-            BackHandler.addEventListener('hardwareBackPress',
-                this.onBackButtonPressAndroid);
-        }
-    }
 
-    componentWillUnmount() {
-        if(Platform.OS === "android"){
-            BackHandler.removeEventListener('hardwareBackPress',
-                this.onBackButtonPressAndroid);
-        }
-    }
     onBackButtonPressAndroid = () => {
         if (this.props.navigation.isFocused()) {
             if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {

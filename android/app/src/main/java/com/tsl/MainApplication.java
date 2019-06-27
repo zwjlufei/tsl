@@ -3,8 +3,12 @@ package com.tsl;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.theweflex.react.WeChatPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import org.reactnative.camera.RNCameraPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import com.beefe.picker.PickerViewPackage;
+import com.github.yamill.orientation.OrientationPackage;
+import com.theweflex.react.WeChatPackage;
 import it.innove.BleManagerPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -31,8 +35,12 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new WeChatPackage(),
+            new PickerPackage(),
+            new RNCameraPackage(),
             new AsyncStoragePackage(),
+            new PickerViewPackage(),
+            new OrientationPackage(),
+            new WeChatPackage(),
             new BleManagerPackage(),
             new ReactVideoPackage(),
             new LinearGradientPackage(),

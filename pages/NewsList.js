@@ -47,7 +47,6 @@ export default class NewsList extends Component{
     _request(callBack,page){
         feach_request(`/message/list?pagenum=${page}&pagesize=10`,'GET')
             .then((data)=>{
-                console.log('list',data)
                 if(data.code==0){
                     this.setState({
                         loading:false
@@ -57,7 +56,7 @@ export default class NewsList extends Component{
             })
             .catch((err)=>{
                 console.log(err);
-                Toast('出现未知错误，信息无法提交～');
+                Toast('网络错误～');
             })
     }
     //下拉刷新

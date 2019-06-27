@@ -10,7 +10,7 @@ import {
     Image,
     TextInput,
     ScrollView,
-    TouchableWithoutFeedback, StatusBar
+    TouchableWithoutFeedback, StatusBar, BackHandler
 } from 'react-native';
 var {width,height} = Dimensions.get('window');
 import LinearGradient from 'react-native-linear-gradient';
@@ -33,18 +33,40 @@ export default class Login extends Component{
         // if(this.state.name&&this.state.pwd){
             feach_request('/login?username=zhangsan&password=123','GET')
                 .then((data)=>{
-                    console.log(data)
                     if(data.code==0){
                         AsyncStorage.setItem('isLogin',data.data);
-                        this.props.navigation.navigate('App')
+                        this.props.navigation.navigate('App',{selectedTab:'MsgList'})
                     }
                 })
                 .catch((err)=>{
                     Toast('请检查用户名和密码的正确性～')
                 })
-
         // }
+    }
+    componentDidMount() {
+        if(Platform.OS === "android"){
+            BackHandler.addEventListener('hardwareBackPress',
+                this.onBackButtonPressAndroid);
+        }
+    }
 
+    componentWillUnmount() {
+        if(Platform.OS === "android"){
+            BackHandler.removeEventListener('hardwareBackPress',
+                this.onBackButtonPressAndroid);
+        }
+    }
+    onBackButtonPressAndroid = () => {
+        if (this.props.navigation.isFocused()) {
+            if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
+                //最近2秒内按过back键，可以退出应用。
+                this.props.navigation.goBack();
+                return false;
+            }
+            this.lastBackPressed = Date.now();
+            Toast('再按一次退出应用');
+            return true;
+        }
     }
     render(){
         return(
@@ -90,6 +112,7 @@ export default class Login extends Component{
 
         )
     }
+
 }
 const styles = StyleSheet.create({
     flex:{

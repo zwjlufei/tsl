@@ -69,6 +69,7 @@ export default class BlePackage extends Component{
     }
     componentWillUnmount(){
         if (this.state.isRemove){
+            BluetoothManager.stopScan();
             this.updateStateListener.remove();
             this.stopScanListener.remove();
             this.discoverPeripheralListener.remove();
@@ -106,7 +107,6 @@ export default class BlePackage extends Component{
     }
     //搜索到一个新设备监听
     handleDiscoverPeripheral=(data)=>{
-        // console.log('BleManagerDiscoverPeripheral:', data);
         let id;  //蓝牙连接id
         let macAddress;  //蓝牙Mac地址
         if(Platform.OS == 'android'){
@@ -390,7 +390,7 @@ export default class BlePackage extends Component{
     }
     render(){
         return(
-            <View style={{flex:1,backgroundColor: '#fcfcfc',marginBottom: px2dp(70)}}>
+            <View style={{flex:1,backgroundColor: '#fcfcfc'}}>
                 <FlatList
                     renderItem={this.renderItem}
                     ListHeaderComponent={this.renderHeader}
