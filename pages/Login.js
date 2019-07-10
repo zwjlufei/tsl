@@ -18,6 +18,7 @@ import px2dp from './tools/px2dp';
 import Icon from "react-native-vector-icons/FontAwesome";
 import {Toast,feach_request} from './tools/public';
 import AsyncStorage from '@react-native-community/async-storage';
+import Alipay from '@0x5e/react-native-alipay';
 export default class Login extends Component{
     static navigationOptions = {
         header: null
@@ -31,16 +32,20 @@ export default class Login extends Component{
     }
     goLogin(){
         // if(this.state.name&&this.state.pwd){
-            feach_request('/login?username=zhangsan&password=123','GET')
+            feach_request(`/login?username=${this.state.name}&password=${this.state.pwd}`,'GET')
                 .then((data)=>{
+                    console.log(data)
                     if(data.code==0){
                         AsyncStorage.setItem('isLogin',data.data);
                         this.props.navigation.navigate('App',{selectedTab:'MsgList'})
                     }
                 })
                 .catch((err)=>{
+                    console.log(err)
                     Toast('请检查用户名和密码的正确性～')
                 })
+        // }else {
+        //     Toast('请检查信息完整性～')
         // }
     }
     componentDidMount() {
@@ -66,6 +71,19 @@ export default class Login extends Component{
             this.lastBackPressed = Date.now();
             Toast('再按一次退出应用');
             return true;
+        }
+    }
+    //支付宝登录
+    async goAlipay(){
+        try {
+            let infoStr = 'apiname=com.alipay.account.auth&method=alipay.open.auth.sdk.code.get&app_id=xxxx&app_name=mc&biz_type=openservice&pid=xxxx&product_id=APP_FAST_LOGIN&scope=kuaijie&target_id=xxxx&auth_type=AUTHACCOUNT&sign_type=RSA2&sign=xxxx'; // get from server, signed
+            let response = await Alipay.authWithInfo(infoStr);
+            console.info(response);
+
+            // let { resultStatus, result, memo } = response;
+            // let { success, result_code, auth_code, user_id } = QueryString.parse(result);
+        } catch (error) {
+            console.error(error);
         }
     }
     render(){
@@ -107,6 +125,14 @@ export default class Login extends Component{
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
+                    {/*<View>*/}
+                        {/*<View style={styles.wechat_icon}>*/}
+                            {/*<Icon name="user-circle-o" size={28} color="#32bbff" />*/}
+                        {/*</View>*/}
+                        {/*<View style={styles.alipay_icon}>*/}
+                            {/*<Icon name="user-circle-o" size={28} color="#32bbff" />*/}
+                        {/*</View>*/}
+                    {/*</View>*/}
                 </ScrollView>
             </View>
 
@@ -159,5 +185,11 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize:px2dp(18),
         letterSpacing: px2dp(2)
+    },
+    wechat_icon:{
+
+    },
+    alipay_icon:{
+
     }
 });

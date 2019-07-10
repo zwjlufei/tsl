@@ -39,7 +39,7 @@ export default class EventProcess extends Component{
         });
         feach_request(`/activity/query?act_id=${msg.act_id}`,'GET')
             .then((data)=>{
-                console.log('msg',data)
+                console.log(data)
                 if(data.code==0){
                     this.setState({
                         msgData:data.data,
@@ -54,9 +54,10 @@ export default class EventProcess extends Component{
     }
     //处理事件
     dealEvent(methods){
-        feach_request(`/activity/run?act_id=${this.state.msg.act_id}&methods=${methods}`,'GET')
+        var data = {req:{ack:this.state.offer},act_id:this.state.msg.act_id};
+        data = JSON.stringify(data);
+        feach_request(`/activity/run`,'POST',data)
             .then((data)=>{
-                console.log('data',data)
                 Toast('提交成功～');
             })
             .catch((err)=>{
@@ -71,10 +72,14 @@ export default class EventProcess extends Component{
                 <Header title={'事务处理'} navigate={this.props.navigation}/>
                 <ScrollView style={styles.flex}>
                     <View style={styles.padding_15}>
-                        <Image
-                            style={{width: 150,height:150,marginBottom:px2dp(10)}}
-                            source={{uri: `${ constant.url}${this.state.msgData.avatar}`}}
-                        />
+                        {
+                            this.state.msgData.avatar?(
+                                <Image
+                                    style={{width: 150,height:150,marginBottom:px2dp(10)}}
+                                    source={{uri: `${ constant.url}${this.state.msgData.avatar}`}}
+                                />
+                            ):(null)
+                        }
                         <View style={styles.msg_wrap}>
                             <Text style={styles.msg_title}>消息主题:</Text>
                             <Text style={[styles.msg_content]}>{this.state.msgData.hint?this.state.msgData.hint:'无'}</Text>
@@ -92,27 +97,27 @@ export default class EventProcess extends Component{
                             <Text style={styles.msg_content}>{this.state.msgData.dead_time}</Text>
                         </View>
                         <View style={styles.mt_20}>
-                            <TextInput multiline = {true} style={styles.input_style} placeholder={'请输入处理意见...'}
+                            <TextInput ref='TextInput' multiline = {true} style={styles.input_style} placeholder={'请输入处理意见...'}
                                        onChangeText={(text) => this.setState({offer:text})}/>
                             <View style={styles.flex_space_between}>
-                                {
-                                    this.state.userInfo.user_id == msg.owner_id && msg.methods.indexOf('r')!==-1?(
-                                        <TouchableWithoutFeedback onPress={()=>this.dealEvent('r')}>
-                                            <View style={[styles.submit_btn,styles.gray_bg]}>
-                                                <Text style={[styles.submit_btn_font,styles.blue_color]}>取消事件</Text>
-                                            </View>
-                                        </TouchableWithoutFeedback>
-                                    ):(null)
-                                }
-                                {
-                                    this.state.userInfo.user_id == msg.guy_id && msg.methods.indexOf('c')!==-1?(
-                                        <TouchableWithoutFeedback onPress={()=>this.dealEvent('c')}>
-                                            <View style={[styles.submit_btn,styles.gray_bg]}>
-                                                <Text style={[styles.submit_btn_font,styles.blue_color]}>不同意</Text>
-                                            </View>
-                                        </TouchableWithoutFeedback>
-                                    ):(null)
-                                }
+                                {/*{*/}
+                                    {/*this.state.userInfo.user_id == msg.owner_id && msg.methods.indexOf('r')!==-1?(*/}
+                                        {/*<TouchableWithoutFeedback onPress={()=>this.dealEvent('r')}>*/}
+                                            {/*<View style={[styles.submit_btn,styles.gray_bg]}>*/}
+                                                {/*<Text style={[styles.submit_btn_font,styles.blue_color]}>取消事件</Text>*/}
+                                            {/*</View>*/}
+                                        {/*</TouchableWithoutFeedback>*/}
+                                    {/*):(null)*/}
+                                {/*}*/}
+                                {/*{*/}
+                                    {/*this.state.userInfo.user_id == msg.guy_id && msg.methods.indexOf('c')!==-1?(*/}
+                                        {/*<TouchableWithoutFeedback onPress={()=>this.dealEvent('c')}>*/}
+                                            {/*<View style={[styles.submit_btn,styles.gray_bg]}>*/}
+                                                {/*<Text style={[styles.submit_btn_font,styles.blue_color]}>不同意</Text>*/}
+                                            {/*</View>*/}
+                                        {/*</TouchableWithoutFeedback>*/}
+                                    {/*):(null)*/}
+                                {/*}*/}
                                 <TouchableWithoutFeedback onPress={()=>this.dealEvent('')}>
                                     <View style={styles.submit_btn}>
                                         <Text style={styles.submit_btn_font}>同意</Text>
@@ -163,7 +168,7 @@ const styles = StyleSheet.create({
     },
     submit_btn:{
         flex:1,
-        height:px2dp(35),
+        height:px2dp(45),
         borderRadius: px2dp(40),
         backgroundColor: '#32bbff',
         marginTop:px2dp(20),

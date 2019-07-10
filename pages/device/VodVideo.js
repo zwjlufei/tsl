@@ -59,8 +59,6 @@ export default class VodVideo extends Component {
             playFromBeginning: false, // 是否从头开始播放
             videoShow:false,
             startTime:'0000-00-00 00:00:00',
-            endTime:'0000-00-00 00:00:00',
-            dev:{},
             vod:'',
             videoLength:0,
             selectYear:date.getFullYear(),
@@ -140,15 +138,9 @@ export default class VodVideo extends Component {
                 if( deleteLast(pickedValue[2])>monthDays){
                     Toast('所选日期无效，请确保日期的正确性～')
                 }else {
-                    if(state=='start'){
-                        this.setState({
-                            startTime:year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second
-                        })
-                    }else {
-                        this.setState({
-                            endTime:year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second
-                        })
-                    }
+                    this.setState({
+                        startTime:year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second
+                    })
                 }
             },
             onPickerCancel: (pickedValue) => {
@@ -180,35 +172,28 @@ export default class VodVideo extends Component {
     }
     //playVod
     playVod(){
-        let  result= compareTime(this.state.endTime,this.state.startTime);
         let start = changeTime(this.state.startTime)/1000;
-        let end = changeTime(this.state.endTime)/1000;
-        console.log(start,end)
-        if(result){
-            feach_request(`/vod?dev=${this.state.dev.container}&channel=${this.state.dev.anchor}&begin_time=${start}&end_time=${end}`,'GET')
-                .then((data)=>{
-                    console.log(data)
-                    if(data.code==0){
-                        this.timerInit = setTimeout(() => {
-                            this.requestVod();
-                        }, 8000);
-                        this.setState({
-                            videoLength:end-start,
-                            vod:data.stream,
-                            videoShow:true,
-                            videoUrl:(Platform.OS === "ios"?`${constant.url}/av/${data.stream}.m3u8`:`${constant.url}/av/${data.stream}.flv`)
-                        })
-                    }else {
-                        Toast('点播失败～');
-                    }
-                })
-                .catch((err)=>{
-                    console.log(err);
-                    Toast('网络异常～');
-                })
-        }else {
-            Toast('结束时间不能小于开始时间～');
-        }
+        console.log(start)
+        feach_request(`/vod?dev=${this.state.dev.container}&channel=${this.state.dev.anchor}&begin_time=${start}`,'GET')
+            .then((data)=>{
+                console.log(data)
+                if(data.code==0){
+                    this.timerInit = setTimeout(() => {
+                        this.requestVod();
+                    }, 8000);
+                    this.setState({
+                        vod:data.stream,
+                        videoShow:true,
+                        videoUrl:(Platform.OS === "ios"?`${constant.url}/av/${data.stream}.m3u8`:`${constant.url}/av/${data.stream}.flv`)
+                    })
+                }else {
+                    Toast('点播失败～');
+                }
+            })
+            .catch((err)=>{
+                console.log(err);
+                Toast('网络异常～');
+            })
     }
     render() {
         return (
@@ -280,18 +265,18 @@ export default class VodVideo extends Component {
                                             )}
 
                                         </TouchableOpacity>
-                                        <Text style={styles.time}>{formatTime(this.state.currentTime)}</Text>
+                                        <Text style={styles.time}>{formatTime(10)}</Text>
                                         <Slider
                                             style={styles.slider_style}
                                             maximumTrackTintColor={'#999999'}
                                             minimumTrackTintColor={'#32bbff'}
-                                            value={this.state.currentTime}
+                                            value={10}
                                             minimumValue={0}
                                             thumbTintColor={'#e0e0e0'}
-                                            maximumValue={this.state.videoLength}
+                                            maximumValue={20}
                                             onValueChange={(currentTime) => { this.onSliderValueChanged(currentTime) }}
                                         />
-                                        <Text style={styles.time}>{formatTime(this.state.videoLength)}</Text>
+                                        <Text style={styles.time}>{formatTime(20)}</Text>
                                         <TouchableOpacity activeOpacity={0.3} onPress={() => { this.onControlShrinkPress() }}>
                                             {
                                                 this.state.isFullScreen?(
@@ -312,14 +297,6 @@ export default class VodVideo extends Component {
                                     <Text>开始时间</Text>
                                     <View style={styles.time_wrap}>
                                         <Text>{this.state.startTime}</Text>
-                                    </View>
-                                </View>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{this._showDatePicker('end')}}>
-                                <View style={styles.flex_row_center}>
-                                    <Text>结束时间</Text>
-                                    <View style={styles.time_wrap}>
-                                        <Text>{this.state.endTime}</Text>
                                     </View>
                                 </View>
                             </TouchableWithoutFeedback>

@@ -247,6 +247,7 @@ export default class InfoSubmit extends Component{
                                     onChangeText={(text) => this.setState({phone:text})}
                                     placeholder={'请输入手机号'}
                                     style={{textAlign: 'right',color:'#666'}}
+                                    maxLength={11}
                                 />
                             </View>
                             <View style={[styles.module_title_wrap,styles.flex_space_between]}>
@@ -269,6 +270,7 @@ export default class InfoSubmit extends Component{
                                     onChangeText={(text) => this.setState({cardNum:text})}
                                     placeholder={'请输入证件号'}
                                     style={{textAlign: 'right',color:'#666'}}
+                                    maxLength={18}
                                 />
                             </View>
                         </View>

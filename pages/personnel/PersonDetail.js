@@ -6,12 +6,13 @@ import {
     View,
     Modal,
     Alert,
-    ScrollView
+    ScrollView, Image
 } from 'react-native';
 import Header from "../CommonModules/Header";
 import Loading from "../CommonModules/Loading";
 import {feach_request, Toast} from "../tools/public";
 import px2dp from "../tools/px2dp";
+import constant from "../tools/constant";
 export default class PersonDetail extends Component{
     static navigationOptions = {
         header: null
@@ -19,19 +20,39 @@ export default class PersonDetail extends Component{
     constructor(props){
         super(props);
         this.state = {
-            detailData:{}
+            detailData:{},
+            avatar:''
         }
     }
     componentDidMount(){
         const pId = this.props.navigation.state.params.pId;
+        this.getInfo(pId);
+        this.getAvatar(pId);
+    }
+    //获取信息
+    getInfo(pId){
         feach_request(`person/detail?pid=${pId}`,'GET')
             .then((data)=>{
-                console.log('list',data)
                 if(data.code==0){
                     this.setState({
                         detailData:data.data
                     })
                 }
+            })
+            .catch((err)=>{
+                Toast('网络错误～');
+            })
+    }
+    //获取头像
+    getAvatar(pId){
+        feach_request(`person/avatars?pid=${pId}`,'GET')
+            .then((data)=>{
+                if(data.code==0&&data.data.length>0){
+                    this.setState({
+                        avatar:data.data[0].avatar
+                    })
+                }
+
             })
             .catch((err)=>{
                 console.log(err);
@@ -45,9 +66,17 @@ export default class PersonDetail extends Component{
                 <Header title={this.state.detailData.name?this.state.detailData.name:'人员资料'} navigate={this.props.navigation}/>
                 <ScrollView style={styles.flex}>
                     <View style={{padding:px2dp(15)}}>
+                        {
+                            this.state.avatar?(
+                                <Image
+                                    style={{width: 150,height:150,marginBottom:px2dp(10)}}
+                                    source={{uri: `${ constant.url}${this.state.avatar}`}}
+                                />
+                            ):(null)
+                        }
                         <View style={styles.msg_item}>
                             <Text style={styles.msg_title}>姓名:</Text>
-                            <Text style={styles.msg_content}>{this.state.detailData.name}</Text>
+                            <Text style={styles.msg_content}>{this.state.detailData.name?this.state.detailData.name:'无'}</Text>
                         </View>
                         <View style={styles.msg_item}>
                             <Text style={styles.msg_title}>别名:</Text>
@@ -55,7 +84,7 @@ export default class PersonDetail extends Component{
                         </View>
                         <View style={styles.msg_item}>
                             <Text style={styles.msg_title}>性别:</Text>
-                            <Text style={styles.msg_content}>{this.state.detailData.gender?(this.state.detailData.gender==1?'男':(this.state.detailData.gender==2?'女':'未知')):'无'}</Text>
+                            <Text style={styles.msg_content}>{this.state.detailData.gender==1?'男':(this.state.detailData.gender==2?'女':'未知')}</Text>
                         </View>
                         <View style={styles.msg_item}>
                             <Text style={styles.msg_title}>籍贯:</Text>

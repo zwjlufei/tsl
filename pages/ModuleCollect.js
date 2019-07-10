@@ -83,6 +83,16 @@ export default class ModuleCollect extends Component{
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
+                                <View style={styles.row_line}>
+                                    <TouchableWithoutFeedback onPress={()=>{navigate('PictureSearch')}}>
+                                        <View style={styles.module_item_wrap}>
+                                            <View style={styles.module_item}>
+                                                <Icon name="camera" size={25} color="#ffffff" />
+                                            </View>
+                                            <Text style={styles.module_item_title}>以图搜人</Text>
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                </View>
                             </View>
                         </View>
                         <View style={{marginBottom:px2dp(30)}}>

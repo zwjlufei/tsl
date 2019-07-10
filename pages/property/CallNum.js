@@ -27,7 +27,7 @@ export default class CallNum extends Component{
         return(
             <View style={{flex:1,backgroundColor: '#fcfcfc'}}>
                 <Header title={'呼叫物业'} navigate={this.props.navigation}/>
-                <TouchableWithoutFeedback onPress={()=>{Linking.openURL('tel:10086')}}>
+                <TouchableWithoutFeedback onPress={()=>{Linking.openURL('tel:13567789900')}}>
                     <View style={styles.call_wrap}>
                         <View style={{flexDirection: 'row'}}>
                             <Text style={[styles.call_font,styles.mr_10]}>公司物业</Text>

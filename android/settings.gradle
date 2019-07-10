@@ -23,5 +23,9 @@ include ':react-native-gesture-handler'
 project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gesture-handler/android')
 include ':react-native-webview'
 project(':react-native-webview').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview/android')
-
+include ':@0x5e_react-native-alipay'
+project(':@0x5e_react-native-alipay').projectDir = new File(rootProject.projectDir, '../node_modules/@0x5e/react-native-alipay/android')
+include ':ReactAndroid'
+project(':ReactAndroid').projectDir = new File(
+    rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
 include ':app'

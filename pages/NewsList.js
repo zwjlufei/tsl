@@ -24,7 +24,7 @@ export default class NewsList extends Component{
     }
     //跳转到详情页
     goDetail(rowData){
-        this.props.navigation.navigate('NewsDetail',{mId:rowData.mId})
+        this.props.navigation.navigate('NewsDetail',{mId:rowData.id})
     }
     //列表渲染
     renderRow=(rowData,index)=>{
@@ -36,22 +36,22 @@ export default class NewsList extends Component{
                             style={{width: 20,height:20}}
                             source={require("./../images/remind_icon.png")}
                         />
-                        <Text style={styles.msg_title} numberOfLines={1}>{rowData.subject}</Text>
+                        <Text style={styles.msg_title} numberOfLines={1}>{rowData.title}</Text>
                     </View>
-                    <Text style={styles.msg_time}>{rowData.datetime}</Text>
+                    <Text style={styles.msg_time}>{rowData.book_time}</Text>
                 </View>
             </TouchableOpacity>
         );
     }
     //请求数据
     _request(callBack,page){
-        feach_request(`/message/list?pagenum=${page}&pagesize=10`,'GET')
+        feach_request(`/news/?pagenum=${page}&pagesize=10`,'GET')
             .then((data)=>{
                 if(data.code==0){
                     this.setState({
                         loading:false
                     });
-                    callBack(data.list)
+                    callBack(data.data)
                 }
             })
             .catch((err)=>{

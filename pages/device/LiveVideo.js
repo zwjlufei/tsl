@@ -54,8 +54,6 @@ export default class LiveVideo extends Component {
         };
     }
     componentDidMount() {
-        // let url = ;
-        // let url = `http://192.168.11.88:8080/av/${设备}.flv`;
         this.requestLive();
     }
     componentWillUnmount(){
@@ -63,12 +61,17 @@ export default class LiveVideo extends Component {
         this.timer && clearTimeout(this.timer);
         this.time && clearTimeout(this.time);
         Orientation.lockToPortrait();
+        // this.setState = (state, callback) => {
+        //     return
+        // }
     }
     //请求live
     requestLive(){
         let dev = this.props.navigation.state.params.device;
+        console.log(`/live?dev=${dev.container}&channel=${dev.anchor}&substream=0`)
         feach_request(`/live?dev=${dev.container}&channel=${dev.anchor}&substream=0`,'GET')
             .then((data)=>{
+                console.log(data)
                 if(data.code==0){
                     this.timer = setTimeout(() => {
                         this.requestLive();
@@ -86,6 +89,7 @@ export default class LiveVideo extends Component {
     }
 
     render() {
+        console.log('url',url)
         return (
             <View style={styles.container} onLayout={this._onLayout}>
                 <StatusBar hidden={this.state.isFullScreen} />

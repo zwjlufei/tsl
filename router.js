@@ -10,6 +10,7 @@ import MsgList from './pages/MsgList';
 import OaList from './pages/oa/OaList';
 import MsgDetail from './pages/msg/MsgDetail';
 import EventProcess from './pages/oa/EventProcess';
+import EventProcessResult from './pages/oa/EventProcessResult';
 import NewsList from './pages/NewsList';
 import NewsDetail from './pages/news/NewsDetail';
 import LiveVideo from './pages/device/LiveVideo';
@@ -27,6 +28,7 @@ import StatisticsSimple from './pages/statistics/StatisticsSimple';
 import TenementApply from './pages/tenement/TenementApply';
 import SmartHouse from './pages/tenement/SmartHouse';
 import InfoSubmit from './pages/tenement/InfoSubmit';
+import PictureSearch from './pages/picture/PictureSearch';
 const Router = createStackNavigator({
         AuthLoading: {
             screen: AuthLoading
@@ -105,6 +107,12 @@ const Router = createStackNavigator({
         },
         InfoSubmit:{
             screen: InfoSubmit
+        },
+        PictureSearch:{
+            screen: PictureSearch
+        },
+        EventProcessResult:{
+            screen: EventProcessResult
         }
     },
     {

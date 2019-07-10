@@ -8,7 +8,7 @@ import {
     Alert,
     FlatList,
     TouchableOpacity,
-    TouchableWithoutFeedback, Image, TextInput
+    TouchableWithoutFeedback, Image, TextInput, Dimensions
 } from 'react-native';
 import Header from "../CommonModules/Header";
 import PageListView from 'react-native-page-listview';
@@ -17,6 +17,7 @@ import {Toast,feach_request} from '../tools/public';
 import Loading from '../CommonModules/Loading';
 import constant from "../tools/constant";
 import Icon from "react-native-vector-icons/Feather";
+var {width,height} = Dimensions.get('window');
 export default class StrangerList extends Component{
     static navigationOptions = {
         header: null
@@ -24,13 +25,15 @@ export default class StrangerList extends Component{
     constructor(props){
         super(props);
         this.state = {
-            listData:[],
             loading:true,
             refresh:false,
             type:false,
             modalVisible: false,
             name:'',
-            mId:''
+            mId:'',
+            img:null,
+            imgSource:'',
+            listShow:true
         }
         this.renderRow=this.renderRow.bind(this);
     }
@@ -44,10 +47,21 @@ export default class StrangerList extends Component{
         return(
             <View style={styles.list_item_wrap}>
                 <View>
-                    <Image
-                        style={{width: 100,height:100,borderRadius:px2dp(10)}}
-                        source={{uri: `${constant.url}${rowData.avatar}`}}
-                    />
+                    <TouchableWithoutFeedback onPress={()=>{
+                        if(rowData.bigpic){
+                            this.setState({
+                                modalVisible: true,
+                                img:true,
+                                imgSource:`${constant.url}${rowData.bigpic}`
+                            })
+                        }
+                    }}>
+                        <Image
+                            style={{width: 100,height:100,borderRadius:px2dp(10)}}
+                            source={{uri: `${constant.url}${rowData.avatar}`}}
+                        />
+                    </TouchableWithoutFeedback>
+
                     {
                         this.state.type?(null):(
                             <Text style={styles.msg_alias}>别名:{rowData.alias?rowData.alias:'无'}</Text>
@@ -60,7 +74,8 @@ export default class StrangerList extends Component{
                         <TouchableWithoutFeedback onPress={()=>{
                             this.setState({
                                 modalVisible: true,
-                                mId:rowData.avatar_id
+                                mId:rowData.avatar_id,
+                                img:false
                             })
                         }}>
                             <View style={styles.control_btn}>
@@ -83,28 +98,35 @@ export default class StrangerList extends Component{
     }
     //请求数据
     _request(source,callBack,type){
+        console.log(type)
         feach_request(`/stranger/list?pageNum=1&pageSize=10&new=${type}`,'GET')
             .then((data)=>{
-                console.log(data)
-                if(data.code==0){
+                console.log('data',data)
+                if(data.code==0 && data.data.length==0){
+                        this.setState({
+                            loading:false,
+                            listShow:false
+                        });
+                }else if(data.code==0 && data.data.length>0){
                     this.setState({
-                        loading:false
+                        loading:false,
+                        listShow:true
                     });
                     if(source=='init'){
                         callBack(data.data)
                     }else {
                         this.PL.manualRefresh(data.data);
                     }
-
                 }
             })
             .catch((err)=>{
-                console.log(err);
+                console.log('err',err);
                 Toast('网络错误～');
             })
     }
     //下拉刷新
     refresh=(callBack)=>{
+        console.log(this.state.type)
         this._request('init',callBack,this.state.type)
     }
     //上拉加载
@@ -139,7 +161,6 @@ export default class StrangerList extends Component{
                     if(data.code==0){
                         feach_request(`/person_surveillance/add?pid=${this.state.mId}`,'GET')
                             .then((data)=>{
-                                console.log('这里',data)
                                 if(data.code==0){
                                     Toast('提交成功～');
                                     this.setState({
@@ -182,14 +203,23 @@ export default class StrangerList extends Component{
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
-                <Loading loading={this.state.loading}/>
-                <PageListView
-                    pageLen={10}
-                    renderRow={this.renderRow}
-                    refresh={this.refresh}
-                    loadMore={this.loadMore}
-                    ref={(r)=>{!this.PL&&(this.PL=r)}}
-                />
+                {
+                    this.state.listShow>0?(
+                        <View style={styles.flex}>
+                            <Loading loading={this.state.loading}/>
+                            <PageListView
+                                pageLen={10}
+                                renderRow={this.renderRow}
+                                refresh={this.refresh}
+                                loadMore={this.loadMore}
+                                ref={(r)=>{!this.PL&&(this.PL=r)}}
+                            />
+                        </View>
+                    ):(
+                        <Text>无数据</Text>
+                    )
+                }
+
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -199,33 +229,51 @@ export default class StrangerList extends Component{
                             modalVisible: false
                         })
                     }}>
-                    <View style={styles.modal_mask}>
-                        <View style={styles.info_wrap}>
-                            <Text style={styles.modal_title}>添加别名</Text>
+                    {
+                        this.state.img?(
                             <TouchableWithoutFeedback onPress={()=>{
                                 this.setState({
                                     modalVisible: false
                                 })
                             }}>
-                                <View style={styles.icon_wrap}>
-                                    <Icon name="x-circle" size={26} color="#bdc1bb"/>
+                                <View style={styles.modal_mask}>
+                                    <Image
+                                        style={{width: width,height:height}}
+                                        source={{uri: this.state.imgSource}}
+                                        resizeMode={'contain'}
+                                    />
                                 </View>
                             </TouchableWithoutFeedback>
-                            <TextInput
-                                style={styles.input_style}
-                                onChangeText={(text) => this.setState({name:text})}
-                                placeholder={'请输入别名'}
-                            />
-                            <TouchableWithoutFeedback onPress={()=>{this.submitMsg()}}>
-                                <View style={[styles.modal_btn,styles.back_btn]}>
-                                    <Text style={[styles.modal_btn_font,styles.back_btn_font]}>提交</Text>
+                            ):(
+                            <View style={styles.modal_mask}>
+                                <View style={styles.info_wrap}>
+                                    <Text style={styles.modal_title}>添加别名</Text>
+                                    <TouchableWithoutFeedback onPress={()=>{
+                                        this.setState({
+                                            modalVisible: false
+                                        })
+                                    }}>
+                                        <View style={styles.icon_wrap}>
+                                            <Icon name="x-circle" size={26} color="#bdc1bb"/>
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                    <TextInput
+                                        style={styles.input_style}
+                                        onChangeText={(text) => this.setState({name:text})}
+                                        placeholder={'请输入别名'}
+                                    />
+                                    <TouchableWithoutFeedback onPress={()=>{this.submitMsg()}}>
+                                        <View style={[styles.modal_btn,styles.back_btn]}>
+                                            <Text style={[styles.modal_btn_font,styles.back_btn_font]}>提交</Text>
+                                        </View>
+                                    </TouchableWithoutFeedback>
                                 </View>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
+                            </View>
+                        )
+                    }
+
                 </Modal>
             </View>
-
         )
     }
 }

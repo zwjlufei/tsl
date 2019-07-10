@@ -2,8 +2,8 @@
 import React, { Component } from 'react';
 import {Platform,ToastAndroid, Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-// const URL = 'https://192.168.11.88/api/';
-const URL = 'http://192.168.11.44:5050/api/';
+const URL = 'https://192.168.11.88/api';
+// const URL = 'http://192.168.11.44:5050/api/';
 //数据请求
 export function feach_request(api,method,data){
     if (method === 'GET'){
@@ -24,9 +24,9 @@ export function feach_request(api,method,data){
         return new Promise((resolve,reject)=>{
             fetch(URL+api,{
                 method : method,
+                credentials: 'include',
                 headers : {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    'Content-Type': 'application/json'
                 },
                 body:data
             }).then(response=> response.json())

@@ -74,8 +74,8 @@ export default class TenementApply extends Component{
                         onCameraReady={() => {
                             console.log('ready')
                         }}
-                        permissionDialogTitle={'Permission to use camera'}
-                        permissionDialogMessage={'We need your permission to use your camera phone'}
+                        permissionDialogTitle={'使用摄影机的许可'}
+                        permissionDialogMessage={'我们需要你的许可才能使用你的照相手机'}
                         style={styles.camera}
                     >
                         <View style={styles.box}>

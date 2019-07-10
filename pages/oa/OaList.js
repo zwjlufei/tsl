@@ -57,8 +57,10 @@ export default class OaList extends Component{
     };
     //跳转详情页
     goDetail(rowData){
-        if(rowData.template=='EventProcess'){
+        if(rowData.program=='EventProcess'){
             this.props.navigation.navigate('EventProcess',{msg:rowData,source:this.state.type})
+        }else if(rowData.program=='EventProcessResult'){
+            this.props.navigation.navigate('EventProcessResult',{msg:rowData,source:this.state.type})
         }else {
             alert('暂无对应模版')
         }
@@ -69,6 +71,19 @@ export default class OaList extends Component{
             <TouchableOpacity onPress={()=>{this.goDetail(rowData)}}>
                 <View style={styles.list_item_wrap}>
                     <Text style={styles.oa_title}>{rowData.title}</Text>
+                        {
+                            rowData.program=='EventProcess'?(
+                                <View style={styles.hint_wrap}>
+                                    <Text style={styles.hint_font}>待处理</Text>
+                                </View>
+                            ):(
+                                rowData.program=='EventProcessResult'?(
+                                <View style={[styles.hint_wrap,styles.green_bg]}>
+                                    <Text style={styles.hint_font}>已处理</Text>
+                                </View>
+                                ):(null)
+                            )
+                        }
                 </View>
             </TouchableOpacity>
         );
@@ -161,7 +176,10 @@ const styles = StyleSheet.create({
         paddingVertical:px2dp(20),
         paddingHorizontal: px2dp(15),
         borderBottomWidth:px2dp(1),
-        borderBottomColor:'#e0e0e0'
+        borderBottomColor:'#e0e0e0',
+        flexDirection:'row',
+        justifyContent: 'space-between',
+        alignItems:'center'
     },
     oa_title:{
         fontSize: px2dp(15)
@@ -170,5 +188,18 @@ const styles = StyleSheet.create({
         fontSize:px2dp(14),
         textAlign: 'center',
         paddingTop:px2dp(30)
+    },
+    hint_wrap:{
+        paddingVertical: px2dp(5),
+        paddingHorizontal:px2dp(10),
+        borderRadius:px2dp(5),
+        backgroundColor:'#f5d731'
+    },
+    hint_font:{
+        fontSize:px2dp(13),
+        color: '#fff'
+    },
+    green_bg:{
+        backgroundColor:'#36990e'
     }
 });

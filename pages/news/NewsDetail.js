@@ -10,6 +10,7 @@ import {
 import Header from "../CommonModules/Header";
 import {WebView} from "react-native-webview";
 import Loading from "../CommonModules/Loading";
+import constant from "../tools/constant";
 export default class NewsDetail extends Component{
     static navigationOptions = {
         header: null
@@ -21,12 +22,12 @@ export default class NewsDetail extends Component{
         }
     }
     render(){
-        const { navigate } = this.props.navigation;
+        const mId = this.props.navigation.state.params.mId;
+        console.log(`${constant.url}/news/${mId}/`)
         return(
             <View style={{flex:1,backgroundColor: '#fcfcfc'}}>
                 <Header title={'公告详情'} navigate={this.props.navigation}/>
-                {/*<Loading loading={this.state.loading}/>*/}
-                <WebView  source={{uri: 'https://mp.weixin.qq.com/s/kMVBBPJTqhmIwzkoINQQFQ'}}
+                <WebView  source={{uri: `${constant.url}/news/${mId}/`}}
                           javaScriptEnabled={true}
                           startInLoadingState={true}
                           renderLoading={() => <Loading />}

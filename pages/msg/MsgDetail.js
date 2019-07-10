@@ -66,7 +66,9 @@ export default class MsgDetail extends Component{
                 if(data.code==0){
                     if(data.data.program=='EventProcess'){
                         this.props.navigation.navigate('EventProcess',{msg:data.data})
-                    }else {
+                    }else if(rowData.program=='EventProcessResult'){
+                        this.props.navigation.navigate('EventProcessResult',{msg:rowData})
+                    }{
                         alert('暂无对应模版')
                     }
                 }

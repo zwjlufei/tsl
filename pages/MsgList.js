@@ -25,7 +25,7 @@ export default class MsgList extends Component{
             listData:[],
             loading:true,
             refresh:false,
-            type:'false'
+            type:true
         }
         this.renderRow=this.renderRow.bind(this);
     }
@@ -52,7 +52,7 @@ export default class MsgList extends Component{
     }
     //请求数据
     _request(source,callBack,type){
-        feach_request(`/message/list?pagenum=1&pagesize=10&noread=${type}`,'GET')
+        feach_request(`/message/list?pageNum=1&pageSize=10&noread=${type}&all=true`,'GET')
             .then((data)=>{
                 console.log(data)
                 if(data.code==0){
@@ -78,7 +78,7 @@ export default class MsgList extends Component{
     }
     //上拉加载
     loadMore=(page,callback)=>{
-        feach_request(`/message/list?pagenum=${page}&pagesize=10&noread=${this.state.type}`,'GET')
+        feach_request(`/message/list?pageNum=${page}&pageSize=10&noread=${this.state.type}&all=true`,'GET')
             .then((data)=>{
                 console.log(data)
                 if(data.code==0){
@@ -106,15 +106,15 @@ export default class MsgList extends Component{
             <View style={{flex:1,backgroundColor: '#fcfcfc'}}>
                 <Header title={'消息列表'} navigate={this.props.navigation} left={true}/>
                 <View style={styles.tab_wrap}>
-                    <TouchableWithoutFeedback onPress={()=>{this.changeTab('false')}}>
-                        <View style={[styles.tab_btn,this.state.type=='false'?styles.bottom_border:'']}>
-                            <Text style={[styles.tab_btn_font,this.state.type=='false'?styles.blue_font:'']}>未读</Text>
+                    <TouchableWithoutFeedback onPress={()=>{this.changeTab(true)}}>
+                        <View style={[styles.tab_btn,this.state.type?styles.bottom_border:'']}>
+                            <Text style={[styles.tab_btn_font,this.state.type?styles.blue_font:'']}>未读</Text>
                         </View>
                     </TouchableWithoutFeedback>
                     <View style={styles.gap_line}></View>
-                    <TouchableWithoutFeedback onPress={()=>{this.changeTab('')}}>
-                        <View style={[styles.tab_btn,this.state.type==''?styles.bottom_border:'']}>
-                            <Text style={[styles.tab_btn_font,this.state.type==''?styles.blue_font:'']}>全部</Text>
+                    <TouchableWithoutFeedback onPress={()=>{this.changeTab(false)}}>
+                        <View style={[styles.tab_btn,this.state.type?'':styles.bottom_border]}>
+                            <Text style={[styles.tab_btn_font,this.state.type?'':styles.blue_font]}>全部</Text>
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
